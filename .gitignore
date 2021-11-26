@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# environment file
+.idea/
+bionic64.box
+.vagrant
+.DS_Store
