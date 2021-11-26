@@ -132,3 +132,4 @@ dmypy.json
 .idea/
 bionic64.box
 .vagrant
+.DS_Store
