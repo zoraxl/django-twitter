@@ -1,2 +1,2 @@
-# django-twitter
-creating a mini twitter
+# twitter-term-1
+第一期课程专用 Repo
