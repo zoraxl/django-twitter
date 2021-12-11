@@ -22,7 +22,6 @@ class UserViewSet(viewsets.ModelViewSet):
 class AccountViewSet(viewsets.ViewSet):
     permission_classes = (AllowAny,)
     serializer_class = SignupSerializer
-
     @action(methods=['POST'], detail=False)
     def signup(self, request):
         """
@@ -81,7 +80,7 @@ class AccountViewSet(viewsets.ViewSet):
             "success": True,
             "user": UserSerializer(instance=user).data,
         })
-
+    # if we are defining the action in objects, we need to have another primary key (detail=True)
     @action(methods=['GET'], detail=False)
     def login_status(self, request):
         """
