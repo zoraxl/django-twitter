@@ -8,10 +8,13 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id','username', 'email')
 
 class UserSerializerForTweet(serializers.ModelSerializer):
+    # 这里处理是啥意思？
     class Meta:
         model = User
         fields = ('id', 'username')
 
+class UserSerializerForFriendship(UserSerializerForTweet):
+    pass
 
 class SignupSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=20, min_length=6)
