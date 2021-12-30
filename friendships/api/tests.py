@@ -12,7 +12,7 @@ FOLLOWINGS_URL = '/api/friendships/{}/followings/'
 class FriendshipApiTests(TestCase):
 
     def setUp(self):
-        self.anonymous_client = APIClient()
+
         self.zora = self.create_user('zora')
         self.zora_client = APIClient()
         self.zora_client.force_authenticate(self.zora)
@@ -80,6 +80,7 @@ class FriendshipApiTests(TestCase):
         self.assertEqual(response.data['deleted'], 1)
         self.assertEqual(Friendship.objects.count(), count - 1)
         # 在未 unfollow 的情况下 unfollow 静默处理
+        # 这样在狂点 unfollow的情况下不会报错，但是deleted = 0
         count = Friendship.objects.count()
         response = self.daniel_client.post(url)
         self.assertEqual(response.status_code, 200)
@@ -97,7 +98,7 @@ class FriendshipApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data['followings']), 3)
 
-        # make sure it is ordered by the latest first
+        # make sure it is ordered by the latest first 倒序排列
         ts0 = response.data['followings'][0]['created_at']
         ts1 = response.data['followings'][1]['created_at']
         ts2 = response.data['followings'][2]['created_at']
