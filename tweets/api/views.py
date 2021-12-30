@@ -3,13 +3,16 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from tweets.api.serializers import TweetSerializer, TweetSerializerForCreate
 from tweets.models import Tweet
 from rest_framework.response import Response
+from newsfeeds.services import NewsFeedService
 
-
-class TweetViewSet(viewsets.GenericViewSet):
+class TweetViewSet(viewsets.GenericViewSet,
+                   viewsets.mixins.CreateModelMixin,
+                   viewsets.mixins.ListModelMixin):
     """
     API endpoint that allows user to create, list tweets
     """
 
+    queryset = Tweet.objects.all()
     serializer_class = TweetSerializerForCreate
 
     def get_permissions(self):
@@ -49,6 +52,7 @@ class TweetViewSet(viewsets.GenericViewSet):
 
         # save will call create method in TweetSerializerForCreate
         tweet = serializer.save()
+        NewsFeedService.fanout_to_followers(tweet)
         return Response(TweetSerializer(tweet).data, status=201)
 
 
