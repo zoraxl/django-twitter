@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from tweets.models import Tweet
 
+
 class CommentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
@@ -25,9 +26,9 @@ class CommentSerializerForCreate(serializers.ModelSerializer):
     def validate(self, data):
         tweet_id = data['tweet_id']
         if not Tweet.objects.filter(id=tweet_id).exists():
-            raise ValidationError({
-                'message': 'tweet does not exist'
-            })
+            raise ValidationError({'message': 'tweet does not exist'})
+        # 必须 return validated data
+        # 也就是验证过之后，进行过处理的（当然也可以不做处理）输入数据
         return data
 
     def create(self, validated_data):

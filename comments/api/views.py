@@ -7,19 +7,18 @@ from comments.api.serializers import (
     CommentSerializerForCreate,
 )
 
-class CommentViewset(viewsets.GenericViewSet):
+
+class CommentViewSet(viewsets.GenericViewSet):
     """
-    只实现list, create, update, destroy 的方法
-    不实现 retrieve (查询单个comment）的方法， 因为这个没有需求
+    只实现 list, create, update, destroy 的方法
+    不实现 retrieve（查询单个 comment） 的方法，因为没这个需求
     """
     serializer_class = CommentSerializerForCreate
     queryset = Comment.objects.all()
 
     def get_permissions(self):
-        """
-        注意要用 AllowAny()/ IsAuthenticated() 实例化出对象
-        而不是 AllowAny / IsAuthenticated 这样只是一个类名
-        """
+        # 注意要加用 AllowAny() / IsAuthenticated() 实例化出对象
+        # 而不是 AllowAny / IsAuthenticated 这样只是一个类名
         if self.action == 'create':
             return [IsAuthenticated()]
         return [AllowAny()]
@@ -28,9 +27,9 @@ class CommentViewset(viewsets.GenericViewSet):
         data = {
             'user_id': request.user.id,
             'tweet_id': request.data.get('tweet_id'),
-            'content': request.data.get('content')
+            'content': request.data.get('content'),
         }
-        # 注意这里必须要 'data=' 来指定参数是传给data的
+        # 注意这里必须要加 'data=' 来指定参数是传给 data 的
         # 因为默认的第一个参数是 instance
         serializer = CommentSerializerForCreate(data=data)
         if not serializer.is_valid():
@@ -42,6 +41,6 @@ class CommentViewset(viewsets.GenericViewSet):
         # save 方法会触发 serializer 里的 create 方法，点进 save 的具体实现里可以看到
         comment = serializer.save()
         return Response(
-            CommentSerializerForCreate(comment).data,
+            CommentSerializer(comment).data,
             status=status.HTTP_201_CREATED,
         )
