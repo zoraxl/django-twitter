@@ -18,7 +18,8 @@ class Comment(models.Model):
         index_together = (('tweet', 'created_at'),)
 
     def __str__(self):
-        return '{} - {} say {} at tweet {}'.format(
+        return 'id {} - {} - {} say {} at tweet {}'.format(
+            self.id,
             self.created_at,
             self.user,
             self.content,
