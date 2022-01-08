@@ -16,6 +16,7 @@ class NewsFeedViewSet(viewsets.GenericViewSet):
         但是一般最好还是按照 NewsFeed.object.filter的方式写，更加清晰直观
         :return:
         """
+        return NewsFeed.objects.filter(user=self.request.user)
 
     def list(self, request):
         serializer = NewsFeedSerializer(self.get_queryset(), many=True)
