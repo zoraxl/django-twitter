@@ -51,5 +51,5 @@ class NewsFeedApiTests(TestCase):
         })
         posted_tweet_id = response.data['id']
         response = self.zora_client.get(NEWSFEEDS_URL)
-        self.assertEqual(len(response.data['newsfeed']), 2)
+        self.assertEqual(len(response.data['newsfeeds']), 2)
         self.assertEqual(response.data['newsfeeds'][0]['tweet']['id'], posted_tweet_id)
