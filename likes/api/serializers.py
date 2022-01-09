@@ -7,6 +7,7 @@ from rest_framework.exceptions import ValidationError
 from tweets.models import Tweet
 
 
+
 class LikeSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
@@ -14,8 +15,8 @@ class LikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ('user', 'created_at')
 
+class BaseLikeSerializerForCreateAndCancel(serializers.ModelSerializer):
 
-class LikeSerializerForCreate(serializers.ModelSerializer):
     content_type = serializers.ChoiceField(choices=['comment', 'tweet'])
     object_id = serializers.IntegerField()
 
@@ -39,6 +40,8 @@ class LikeSerializerForCreate(serializers.ModelSerializer):
             raise ValidationError({'object_id': 'Object does not exist'})
         return data
 
+class LikeSerializerForCreate(BaseLikeSerializerForCreateAndCancel):
+
     def create(self, validated_data):
         model_class = self._get_model_class(validated_data)
         instance, _ = Like.objects.get_or_create(
@@ -47,3 +50,32 @@ class LikeSerializerForCreate(serializers.ModelSerializer):
             user=self.context['request'].user,
         )
         return instance
+
+class LikeSerializerForCancel(BaseLikeSerializerForCreateAndCancel):
+
+    def cancel(self):
+
+        """
+        cancel 方法是一个自定义的方法，cancel 不会被 serializer.save 调用
+        所以需要直接调用 serializer.cancel()
+        这里不需要有一个检验之前是否已经点赞的报错信息：
+        因为没有找到就删除的情况也是会成功的（具体的可以看delete里面的实现过程）
+        但是如果我们想要这个信息， 我们也可以用
+        deleted, _ =  Like.objects.filter(
+            content_type=ContentType.objects.get_for_model(model_class),
+            object_id=self.validated_data['object_id'],
+            user=self.context['request'].user,
+        ).delete()
+        return deleted
+        然后我们在返回response 的时候增加一个
+        {
+            'deleted': deleted,
+        }
+        """
+
+        model_class = self._get_model_class(self.validated_data)
+        Like.objects.filter(
+            content_type=ContentType.objects.get_for_model(model_class),
+            object_id=self.validated_data['object_id'],
+            user=self.context['request'].user,
+        ).delete()
